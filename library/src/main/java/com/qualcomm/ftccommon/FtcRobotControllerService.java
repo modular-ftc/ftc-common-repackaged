@@ -68,7 +68,6 @@ import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterRC;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -87,207 +86,25 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
   private final IBinder binder = new FtcRobotControllerBinder();
   private final PreferencesHelper preferencesHelper = new PreferencesHelper(TAG);
-
+    private final EventLoopMonitor eventLoopMonitor = new EventLoopMonitor();
+    private final Object wifiDirectCallbackLock = new Object();
   private NetworkConnection networkConnection;
   private EventLoopManager  eventLoopManager;
   private Robot             robot;
   private EventLoop         eventLoop;
   private EventLoop         idleEventLoop;
-
   private WifiDirectAssistant.Event networkConnectionStatus = WifiDirectAssistant.Event.UNKNOWN;
   private RobotStatus       robotStatus = RobotStatus.NONE;
   private PeerStatus        peerStatus = PeerStatus.DISCONNECTED;
-
   private UpdateUI.Callback callback = null;
-  private final EventLoopMonitor eventLoopMonitor = new EventLoopMonitor();
-
   private SwitchableLight bootIndicator = null;
   private Future          bootIndicatorOff = null;
   private LightBlinker    livenessIndicatorBlinker = null;
   private Future          robotSetupFuture = null;
   private WifiDirectAgent wifiDirectAgent = WifiDirectAgent.getInstance();
-  private final Object    wifiDirectCallbackLock = new Object();
-
-  private final WebServer webServer = new WebServer();
 
   //----------------------------------------------------------------------------------------------
   // Initialization
-  //----------------------------------------------------------------------------------------------
-
-  public class FtcRobotControllerBinder extends Binder {
-    public FtcRobotControllerService getService() {
-      return FtcRobotControllerService.this;
-    }
-  }
-
-  //----------------------------------------------------------------------------------------------
-  // Types
-  //----------------------------------------------------------------------------------------------
-
-  private class EventLoopMonitor implements EventLoopManager.EventLoopMonitor {
-
-  @Override
-  public void onStateChange(@NonNull RobotState state) {
-    if (callback == null) return;
-    callback.updateRobotState(state);
-    if (state == RobotState.RUNNING) {
-      updateRobotStatus(RobotStatus.NONE);
-    }
-  }
-
-  @Override public void onPeerConnected(boolean peerLikelyChanged) {
-    if (callback==null) return;
-    updatePeerStatus(PeerStatus.CONNECTED);
-  }
-
-  @Override public void onPeerDisconnected() {
-    if (callback==null) return;
-    updatePeerStatus(PeerStatus.DISCONNECTED);
-  }
-
-  private void updatePeerStatus(PeerStatus peerStatus) {
-    // Update internal information
-    if (FtcRobotControllerService.this.peerStatus != peerStatus) {
-      FtcRobotControllerService.this.peerStatus = peerStatus;
-      // When we connect, send useful info to the driver station
-      if (peerStatus == PeerStatus.CONNECTED) {
-        UserConfigurationTypeManager.getInstance().sendUserDeviceTypes();
-        PreferenceRemoterRC.getInstance().sendAllPreferences();
-      }
-    }
-    // Do the UI stuff as well
-    callback.updatePeerStatus(peerStatus);
-  }
-
-  @Override
-  public void onTelemetryTransmitted() {
-    if (callback == null) return;
-    callback.refreshErrorTextOnUiThread();
-    }
-  }
-
-  /** RobotSetupRunnable is run on a worker thread, and carries out the process of
-   * getting the robot ready to run. If interrupted, it should return quickly and promptly. */
-  private class RobotSetupRunnable implements Runnable {
-
-    //----------------------------------------------------------------------------------------------
-    // Building blocks
-    //----------------------------------------------------------------------------------------------
-
-    void shutdownRobot() {
-      // if an old robot is around, shut it down
-      if (robot != null) {
-        robot.shutdown();
-        robot = null;
-      }
-    }
-
-    void awaitUSB() throws InterruptedException {
-      updateRobotStatus(RobotStatus.SCANNING_USB);
-      /*
-       * Give android a chance to finish scanning for USB devices before
-       * we create our robot object.
-       *
-       * It takes Android some time per USB device plugged into a hub.
-       * Higher quality hubs take less time.
-       *
-       * If USB hubs are chained this can take much longer.
-       *
-       * TODO: should be reviewed
-       */
-       Thread.sleep(USB_WAIT);
-    }
-
-    void initializeEventLoopAndRobot() throws RobotCoreException {
-      if (eventLoopManager == null) {
-        eventLoopManager = new EventLoopManager(FtcRobotControllerService.this, FtcRobotControllerService.this, idleEventLoop);
-      }
-      robot = RobotFactory.createRobot(eventLoopManager);
-    }
-
-    boolean waitForWifi() throws InterruptedException {
-      updateRobotStatus(RobotStatus.WAITING_ON_WIFI);
-      boolean waited = false;
-      for (;;) {
-        synchronized (wifiDirectCallbackLock) {
-          if (wifiDirectAgent.isWifiEnabled()) return waited;
-          waited = true;
-          waitForNextWifiDirectCallback();
-        }
-      }
-    }
-
-    boolean waitForWifiDirect() throws InterruptedException {
-      updateRobotStatus(RobotStatus.WAITING_ON_WIFI_DIRECT);
-      boolean waited = false;
-      for (;;) {
-        synchronized (wifiDirectCallbackLock) {
-          if (wifiDirectAgent.isWifiDirectEnabled()) return waited;
-          waited = true;
-          waitForNextWifiDirectCallback();
-        }
-      }
-    }
-
-    boolean waitForNetworkConnection() throws InterruptedException {
-      updateRobotStatus(RobotStatus.WAITING_ON_NETWORK_CONNECTION);
-      boolean waited = false;
-      for (;;) {
-        if (networkConnection.isConnected()) return waited;
-        waited = true;
-        Thread.sleep(NETWORK_WAIT);
-      }
-    }
-
-    void waitForNetwork() throws InterruptedException {
-      waitForWifi();
-      if (networkConnection.getNetworkType() == NetworkType.WIFIDIRECT) {
-        waitForWifiDirect();
-
-        // Re-issue createConnection(): we might have just brought up the network in one of the
-        // waits, so the previous createConnection() in bind above might have failed.
-        networkConnection.createConnection();
-
-        // Wait until we're free and clear to go
-        waitForNetworkConnection();
-      }
-    }
-
-    void startRobot() throws RobotCoreException {
-      updateRobotStatus(RobotStatus.STARTING_ROBOT);
-      robot.eventLoopManager.setMonitor(eventLoopMonitor);
-      robot.start(eventLoop);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Core Operation
-    //----------------------------------------------------------------------------------------------
-
-    @Override public void run() {
-      ThreadPool.logThreadLifeCycle("RobotSetupRunnable.run()", new Runnable() { @Override public void run() {
-
-        RobotLog.vv(TAG, "Processing robot setup");
-        try {
-
-          shutdownRobot();
-          awaitUSB();
-          initializeEventLoopAndRobot();  // unclear why this step couldn't be folded into startRobot()
-          waitForNetwork();
-          startRobot();
-
-        } catch (RobotCoreException e) {
-          updateRobotStatus(RobotStatus.UNABLE_TO_START_ROBOT);
-          RobotLog.setGlobalErrorMsg(e, getString(R.string.globalErrorFailedToCreateRobot));
-        } catch (InterruptedException e) {
-          updateRobotStatus(RobotStatus.ABORT_DUE_TO_INTERRUPT);
-        }
-
-      }});
-    }
-  }
-
-  //----------------------------------------------------------------------------------------------
-  // Wifi processing
   //----------------------------------------------------------------------------------------------
 
   @Override public void onReceive(Context context, Intent intent) {
@@ -296,19 +113,23 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     }
   }
 
+    //----------------------------------------------------------------------------------------------
+    // Types
+    //----------------------------------------------------------------------------------------------
+
   void waitForNextWifiDirectCallback() throws InterruptedException {
     synchronized (wifiDirectCallbackLock) {
       wifiDirectCallbackLock.wait();
     }
   }
 
-  //----------------------------------------------------------------------------------------------
-  // Accessing
-  //----------------------------------------------------------------------------------------------
-
   public NetworkConnection getNetworkConnection() {
     return networkConnection;
   }
+
+    //----------------------------------------------------------------------------------------------
+    // Wifi processing
+    //----------------------------------------------------------------------------------------------
 
   public NetworkConnection.Event getNetworkConnectionStatus() {
     return networkConnectionStatus;
@@ -318,12 +139,12 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     return robotStatus;
   }
 
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
   public Robot getRobot() {
     return this.robot;
-  }
-
-  public @NonNull WebServer getWebServer() {
-    return this.webServer;
   }
 
   @Override public void onCreate() {
@@ -375,7 +196,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
   @Override public void onDestroy() {
     super.onDestroy();
     RobotLog.vv(TAG, "onDestroy()");
-    webServer.stop();
     stopLEDS();
     wifiDirectAgent.unregisterCallback(this);
   }
@@ -423,7 +243,7 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
   public synchronized void setupRobot(EventLoop eventLoop, EventLoop idleEventLoop) {
 
-    /* 
+    /*
      * (Possibly out-of-date comment:)
      * There is a bug in the Android activity life cycle with regards to apps
      * launched via USB. To work around this bug we will only honor this
@@ -479,7 +299,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
         break;
       case CONNECTION_INFO_AVAILABLE:
         RobotLog.ii(TAG, "Network Connection Passphrase: " + networkConnection.getPassphrase());
-        webServer.start();
         break;
       case ERROR:
         RobotLog.ee(TAG, "Network Connection Error: " + networkConnection.getFailureReason());
@@ -505,4 +324,180 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
       callback.updateRobotStatus(status);
     }
   }
+
+    public class FtcRobotControllerBinder extends Binder {
+        public FtcRobotControllerService getService() {
+            return FtcRobotControllerService.this;
+        }
+    }
+
+    private class EventLoopMonitor implements EventLoopManager.EventLoopMonitor {
+
+        @Override
+        public void onStateChange(@NonNull RobotState state) {
+            if (callback == null) return;
+            callback.updateRobotState(state);
+            if (state == RobotState.RUNNING) {
+                updateRobotStatus(RobotStatus.NONE);
+            }
+        }
+
+        @Override
+        public void onPeerConnected(boolean peerLikelyChanged) {
+            if (callback == null) return;
+            updatePeerStatus(PeerStatus.CONNECTED);
+        }
+
+        @Override
+        public void onPeerDisconnected() {
+            if (callback == null) return;
+            updatePeerStatus(PeerStatus.DISCONNECTED);
+        }
+
+        private void updatePeerStatus(PeerStatus peerStatus) {
+            // Update internal information
+            if (FtcRobotControllerService.this.peerStatus != peerStatus) {
+                FtcRobotControllerService.this.peerStatus = peerStatus;
+                // When we connect, send useful info to the driver station
+                if (peerStatus == PeerStatus.CONNECTED) {
+                    UserConfigurationTypeManager.getInstance().sendUserDeviceTypes();
+                    PreferenceRemoterRC.getInstance().sendAllPreferences();
+                }
+            }
+            // Do the UI stuff as well
+            callback.updatePeerStatus(peerStatus);
+        }
+
+        @Override
+        public void onTelemetryTransmitted() {
+            if (callback == null) return;
+            callback.refreshErrorTextOnUiThread();
+        }
+    }
+
+    /**
+     * RobotSetupRunnable is run on a worker thread, and carries out the process of
+     * getting the robot ready to run. If interrupted, it should return quickly and promptly.
+     */
+    private class RobotSetupRunnable implements Runnable {
+
+        //----------------------------------------------------------------------------------------------
+        // Building blocks
+        //----------------------------------------------------------------------------------------------
+
+        void shutdownRobot() {
+            // if an old robot is around, shut it down
+            if (robot != null) {
+                robot.shutdown();
+                robot = null;
+            }
+        }
+
+        void awaitUSB() throws InterruptedException {
+            updateRobotStatus(RobotStatus.SCANNING_USB);
+      /*
+       * Give android a chance to finish scanning for USB devices before
+       * we create our robot object.
+       *
+       * It takes Android some time per USB device plugged into a hub.
+       * Higher quality hubs take less time.
+       *
+       * If USB hubs are chained this can take much longer.
+       *
+       * TODO: should be reviewed
+       */
+            Thread.sleep(USB_WAIT);
+        }
+
+        void initializeEventLoopAndRobot() throws RobotCoreException {
+            if (eventLoopManager == null) {
+                eventLoopManager = new EventLoopManager(FtcRobotControllerService.this, FtcRobotControllerService.this, idleEventLoop);
+            }
+            robot = RobotFactory.createRobot(eventLoopManager);
+        }
+
+        boolean waitForWifi() throws InterruptedException {
+            updateRobotStatus(RobotStatus.WAITING_ON_WIFI);
+            boolean waited = false;
+            for (; ; ) {
+                synchronized (wifiDirectCallbackLock) {
+                    if (wifiDirectAgent.isWifiEnabled()) return waited;
+                    waited = true;
+                    waitForNextWifiDirectCallback();
+                }
+            }
+        }
+
+        boolean waitForWifiDirect() throws InterruptedException {
+            updateRobotStatus(RobotStatus.WAITING_ON_WIFI_DIRECT);
+            boolean waited = false;
+            for (; ; ) {
+                synchronized (wifiDirectCallbackLock) {
+                    if (wifiDirectAgent.isWifiDirectEnabled()) return waited;
+                    waited = true;
+                    waitForNextWifiDirectCallback();
+                }
+            }
+        }
+
+        boolean waitForNetworkConnection() throws InterruptedException {
+            updateRobotStatus(RobotStatus.WAITING_ON_NETWORK_CONNECTION);
+            boolean waited = false;
+            for (; ; ) {
+                if (networkConnection.isConnected()) return waited;
+                waited = true;
+                Thread.sleep(NETWORK_WAIT);
+            }
+        }
+
+        void waitForNetwork() throws InterruptedException {
+            waitForWifi();
+            if (networkConnection.getNetworkType() == NetworkType.WIFIDIRECT) {
+                waitForWifiDirect();
+
+                // Re-issue createConnection(): we might have just brought up the network in one of the
+                // waits, so the previous createConnection() in bind above might have failed.
+                networkConnection.createConnection();
+
+                // Wait until we're free and clear to go
+                waitForNetworkConnection();
+            }
+        }
+
+        void startRobot() throws RobotCoreException {
+            updateRobotStatus(RobotStatus.STARTING_ROBOT);
+            robot.eventLoopManager.setMonitor(eventLoopMonitor);
+            robot.start(eventLoop);
+        }
+
+        //----------------------------------------------------------------------------------------------
+        // Core Operation
+        //----------------------------------------------------------------------------------------------
+
+        @Override
+        public void run() {
+            ThreadPool.logThreadLifeCycle("RobotSetupRunnable.run()", new Runnable() {
+                @Override
+                public void run() {
+
+                    RobotLog.vv(TAG, "Processing robot setup");
+                    try {
+
+                        shutdownRobot();
+                        awaitUSB();
+                        initializeEventLoopAndRobot();  // unclear why this step couldn't be folded into startRobot()
+                        waitForNetwork();
+                        startRobot();
+
+                    } catch (RobotCoreException e) {
+                        updateRobotStatus(RobotStatus.UNABLE_TO_START_ROBOT);
+                        RobotLog.setGlobalErrorMsg(e, getString(R.string.globalErrorFailedToCreateRobot));
+                    } catch (InterruptedException e) {
+                        updateRobotStatus(RobotStatus.ABORT_DUE_TO_INTERRUPT);
+                    }
+
+                }
+            });
+        }
+    }
 }
