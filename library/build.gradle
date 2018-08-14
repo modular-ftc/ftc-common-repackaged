@@ -8,7 +8,7 @@ android {
         targetSdkVersion 19
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        versionCode 38
+        versionCode 43
         versionName "$ftc_version.0"
 
         ndk {
@@ -24,7 +24,7 @@ version = android.defaultConfig.versionName
 project.archivesBaseName = 'ftc-common-repackaged'
 
 dependencies {
-    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.5"
+    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.0"
     implementation "org.first.ftc:hardware:$ftc_version"
     implementation "org.first.ftc:inspection:$ftc_version"
 }
