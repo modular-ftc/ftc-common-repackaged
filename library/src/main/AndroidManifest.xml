@@ -3,14 +3,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qualcomm.ftccommon">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:required="true" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:required="true" />
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
         android:required="true" />
 
     <application
@@ -77,8 +75,8 @@
             android:label="@string/title_activity_wifi_remembered_groups_editor" >
         </activity>
         <activity
-            android:name="com.qualcomm.ftccommon.AboutActivity"
-            android:label="@string/about_activity" >
+            android:name="com.qualcomm.ftccommon.FtcAboutActivity"
+            android:label="@string/ftc_about_activity" >
         </activity>
         <activity
             android:name="com.qualcomm.ftccommon.configuration.EditSwapUsbDevices"
@@ -150,6 +148,12 @@
             android:name="com.qualcomm.ftccommon.configuration.EditLynxUsbDeviceActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/edit_lynx_usb_device_activity"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.qualcomm.ftccommon.configuration.EditWebcamActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/edit_webcam_activity"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity

@@ -33,7 +33,7 @@
             android:hint="@string/name_prompt_text"
             android:inputType="text"
             android:maxLength="200"
-            android:text="@string/deviceInterfaceModuleName"
+            android:text="@string/filler_text"
             android:textSize="18sp"
             android:textStyle="bold">
         </EditText>
