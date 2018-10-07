@@ -22,7 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
-        android:entries="@array/choice_array_analogOutput"
         android:prompt="@string/choice_prompt_analogOutput"
         android:spinnerMode="dropdown" />
 

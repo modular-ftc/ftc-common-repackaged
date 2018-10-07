@@ -22,10 +22,10 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context=".configuration.EditLynxModuleActivity">
+        tools:context=".configuration.EditWebcamActivity">
 
         <EditText
-            android:id="@+id/lynx_module_name"
+            android:id="@+id/cameraName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/name_prompt_text"
@@ -33,14 +33,21 @@
             android:maxLength="200"
             android:text="@string/filler_text"
             android:textSize="18sp"
-            android:textStyle="bold"></EditText>
+            android:textStyle="bold"/>
 
-        <ListView
-            android:id="@+id/lynx_module_devices"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:entries="@array/lynx_module_options_array">
+        <TextView
+            android:id="@+id/serialNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"/>
+        <TextView
+            android:id="@+id/controller_name_prompt_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/webcam_name_prompt">
+        </TextView>
 
-        </ListView>
     </LinearLayout>
 </LinearLayout>

@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context=".EditDigitalDevicesActivity">
+              tools:context=".configuration.EditI2cDevicesActivityAbstract">
 
     <include
         android:id="@+id/included_header"

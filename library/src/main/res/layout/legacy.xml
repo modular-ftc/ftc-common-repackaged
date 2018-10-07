@@ -37,7 +37,7 @@
                 android:hint="@string/name_prompt_text"
                 android:inputType="text"
                 android:maxLength="200"
-                android:text="@string/legacy_controller_name"
+                android:text="@string/filler_text"
                 android:textSize="18sp"
                 android:textStyle="bold">
             </EditText>
@@ -52,6 +52,7 @@
                 android:id="@+id/controller_name_prompt_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginBottom="30dp"
                 android:text="@string/legacy_controller_name">
             </TextView>

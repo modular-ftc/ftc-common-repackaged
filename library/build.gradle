@@ -8,7 +8,7 @@ android {
         targetSdkVersion 19
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        versionCode 43
+        versionCode 44
         versionName "$ftc_version.0"
 
         ndk {
@@ -16,6 +16,9 @@ android {
         }
 
         consumerProguardFiles 'proguard-rules.pro'
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 

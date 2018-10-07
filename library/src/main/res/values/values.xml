@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="choice_array_analogInput">
-    <item>NOTHING</item>
-    <item>OPTICAL_DISTANCE_SENSOR</item>
-    <item>ANALOG_INPUT</item>
-    <item>MR_ANALOG_TOUCH_SENSOR</item>
-  </string-array>
-    <string-array name="choice_array_analogOutput">
-    <item>NOTHING</item>
-    <item>ANALOG_OUTPUT</item>
-  </string-array>
-    <string-array name="choice_array_digital_device">
-    <item>NOTHING</item>
-    <item>TOUCH_SENSOR</item>
-    <item>LED</item>
-    <item>DIGITAL_DEVICE</item>
-  </string-array>
-    <string-array name="choice_array_digital_device_lynx">
-    <item>NOTHING</item>
-    <item>LED</item>
-    <item>DIGITAL_DEVICE</item>
-  </string-array>
     <string-array name="choice_array_legacy_module">
+    <item>NOTHING</item>
     <item>GYRO</item>
     <item>TOUCH_SENSOR</item>
     <item>COMPASS</item>
@@ -34,12 +14,6 @@
     <item>MATRIX_CONTROLLER</item>
     <item>TOUCH_SENSOR_MULTIPLEXER</item>
     <item>COLOR_SENSOR</item>
-    <item>NOTHING</item>
-  </string-array>
-    <string-array name="choice_array_servo">
-    <item>NOTHING</item>
-    <item>SERVO</item>
-    <item>CONTINUOUS_ROTATION_SERVO</item>
   </string-array>
     <string-array name="device_interface_module_options_array">
     <item>PWM Devices|EDIT_PWM_PORT</item>
@@ -52,7 +26,6 @@
     <item>Motors|EDIT_MOTOR_LIST</item>
     <item>Servos|EDIT_SERVO_LIST</item>
     <item>Digital Devices|EDIT_DIGITAL</item>
-    <item>PWM Devices|EDIT_PWM_PORT</item>
     <item>Analog Input Devices|EDIT_ANALOG_INPUT</item>
     <item>I2C Bus 0|EDIT_I2C_BUS0</item>
     <item>I2C Bus 1|EDIT_I2C_BUS1</item>
@@ -65,7 +38,7 @@
     <string name="about_app_version">App Version</string>
     <string name="about_build_time">App Build Time</string>
     <string name="about_library_version">Library Version</string>
-    <string name="about_network_connection_info">Network Connection Config Information</string>
+    <string name="about_network_connection_info">Network Connection Info</string>
     <string name="about_network_protocol_version">Robot Wifi Protocol Version</string>
     <string name="about_wifi_connected">Connected</string>
     <string name="about_wifi_direct_info">Wifi Direct Config Information</string>
@@ -83,6 +56,7 @@
     <string name="add_servo_controller_menu_item">Add Servo Controller</string>
     <string name="alertLynxFirmwareUpdateFailed">Firmware update of Expansion Hub %s failed. Please try again.</string>
     <string name="alertLynxFirmwareUpdateFailedTitle">Firmware Update Failed</string>
+    <string name="alertLynxFirmwareUpdateTimedout">Firmware update of Expansion Hub %s timed out. Please try again.</string>
     <string name="alertMessageNoActionGetContent">Your device lacks system support for selecting files.</string>
     <string name="alertTitleRobotControllerConsole">Robot Controller Console</string>
     <string name="app_name">FtcConfiguration</string>
@@ -148,16 +122,18 @@
     <string name="edit_i2c_devices_activity">Edit I2c Devices</string>
     <string name="edit_legacy_module_controller_activity">Edit Legacy Module Controller</string>
     <string name="edit_lynx_module_controller_activity">Edit Expansion Hub</string>
-    <string name="edit_lynx_usb_device_activity">Edit Master Expansion Hub</string>
+    <string name="edit_lynx_usb_device_activity">Edit Expansion Hub Portal</string>
     <string name="edit_matrix_controller_activity">Edit Matrix Controller</string>
     <string name="edit_motor_controller_activity">Edit Motor Controller</string>
     <string name="edit_motor_controller_menu_item">Edit Motor Controller</string>
     <string name="edit_pwm_devices_activity">Edit PWM Devices</string>
     <string name="edit_servo_controller_activity">Edit Servo Controller</string>
     <string name="edit_swap_devices_activity">Swap USB Devices</string>
+    <string name="edit_webcam_activity">Edit Camera</string>
     <string name="errorConfigurationNotFound">"Configuration not found: %s"</string>
     <string name="errorFailedToOpenDeviceManager">Failed to open the Device Manager</string>
     <string name="errorParsingConfiguration">"Error parsing configuration: %s"</string>
+    <string name="errorScanningDevicesTitle">Error Scanning for Devices</string>
     <string name="error_text_error">Error: %s</string>
     <string name="error_text_warning">Warning: %s</string>
     <string name="expansionHubFirmwareUpdateMessage">Updating Expansion Hub %1$s firmware with \"%2$s\". Please do not unplug.</string>
@@ -166,10 +142,12 @@
     <string name="file_edit_button">Edit</string>
     <string name="file_prompt">Choose Configuration File</string>
     <string name="filename_editText">Filename</string>
+    <string name="filler_text">lorem ipsum</string>
     <string name="fixFailDuplicate">Unable to fix \"%1$s\": no unique replacement %2$s attached</string>
     <string name="fixFailNoneAvailable">Unable to fix \"%1$s\": no replacement %2$s attached</string>
     <string name="ftcConfigScanning">Scanning…</string>
     <string name="ftcConfigScanningFailed">The scan for devices on the USB bus failed.</string>
+    <string name="ftc_about_activity">About</string>
     <string name="globalErrorFailedToCreateRobot">unable to create robot</string>
     <string name="globalErrorFailedToStartRobot">failed to start robot</string>
     <string name="input_name_hint">Enter device name here</string>
@@ -185,10 +163,15 @@
     <string name="lynx_address_instructions_no_devices">No Expansion Hubs are connected. Please connect one or more Expansion Hubs, and try again.</string>
     <string name="lynx_address_instructions_static">Each Expansion Hub connected to a robot controller over the same USB connection (wired or embedded) must have a hub address which is unique within that connection. This screen allows these persistent hub addresses to be changed.</string>
     <string name="lynx_address_instructions_update">Expansion Hubs with the following serial numbers and addresses are currently connected. To change the address of a hub, select a new address from the dropdown.</string>
+    <string name="lynx_fw_instructions_firmware_version">Current Firmware: %s</string>
+    <string name="lynx_fw_instructions_item_title">Expansion Hub</string>
+    <string name="lynx_fw_instructions_module_address">Module address: %d</string>
+    <string name="lynx_fw_instructions_module_address_unavailable">Module address: (unavailable)</string>
     <string name="lynx_fw_instructions_no_binary">No Expansion Hub firmware update files were found on the robot controller. Please download firmware updates to \"%s\", and try again.</string>
-    <string name="lynx_fw_instructions_no_devices">Expansion Hub firmware update file \"%s\" was found, but no Expansion Hubs are connected. Please connect one or more Expansion Hubs, and try again.</string>
-    <string name="lynx_fw_instructions_update">Expansion Hub firmware update file \"%1$s\" was found, as were Expansion Hubs with the following serial numbers:\n\n%2$s\nClick on the button below to update the firmware of these Expansion Hubs.</string>
-    <string name="matrix_controller_name">Matrix Controller</string>
+    <string name="lynx_fw_instructions_no_devices">Expansion Hub firmware update file \"%s\" was found, but no Expansion Hubs are connected. Please connect one or more Expansion Hubs via USB, and try again.</string>
+    <string name="lynx_fw_instructions_serial">Serial number: %s</string>
+    <string name="lynx_fw_instructions_update">Expansion Hub firmware update file \"%1$s\" was found, as were the following Expansion Hubs:</string>
+    <string name="lynx_fw_instructions_update_post">Click on the button below to update the firmware on each of these Expansion Hubs.\n\nWARNING: While the firmware update is in progress, do not unplug hubs or restart the robot, or a hub may become permanently unusable.</string>
     <string name="matrix_controller_name_prompt">Enter the name for this matrix controller here</string>
     <string name="matrix_motor_title">Motors</string>
     <string name="matrix_name_prompt">Matrix name</string>
@@ -202,7 +185,6 @@
     <string name="matrix_port7">4</string>
     <string name="matrix_servo_title">Servos</string>
     <string name="motor">Motor</string>
-    <string name="motor_controller_name">Motor Controller</string>
     <string name="motor_controller_name_prompt">Enter the name for this motor controller here</string>
     <string name="motor_name">Enter motor name here</string>
     <string name="motor_name_prompt">Motor name</string>
@@ -229,6 +211,9 @@
     <string name="notAllDevicesFoundTitle">Some Devices Not Found</string>
     <string name="port">Port</string>
     <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
+    <string name="pref_wifi_automute">Wifi Auto Mute</string>
+    <string name="prefedit_wifi_automute">Wifi Auto Mute</string>
+    <string name="prefedit_wifi_automute_summary">Turn wifi off automatically after a period of inactivity.</string>
     <string name="readOnlyConfigFeedback">read-only</string>
     <string name="readOnlyExplanation">Read-only configurations can be edited, but must be saved under a new name.</string>
     <string name="readXML_text">Select an XML file to instantiate a Robot from that file</string>
@@ -249,7 +234,6 @@
     <string name="saveChangesTitle">Save Changes?</string>
     <string name="save_configuration">Save Configuration</string>
     <string name="serialNumberNotAttached">" (not attached)"</string>
-    <string name="servo_controller_name">Servo Controller</string>
     <string name="servo_controller_name_prompt">Enter the name for this servo controller here</string>
     <string name="servo_name">Enter servo name here</string>
     <string name="servo_name_prompt">Servo name</string>
@@ -293,6 +277,7 @@
     <string name="toastLynxFirmwareUpdateSuccessful">Firmware update of Expansion Hub %s succeeded.</string>
     <string name="toastRestartRobotComplete">Restart Robot Complete</string>
     <string name="toastRestartingRobot">Restarting Robot</string>
+    <string name="toastRobotSetupComplete">Robot Setup Complete</string>
     <string name="toastSaved">Saved</string>
     <string name="toastUnableToLaunchZTEWifiChannelEditor">Unable to launch ZTE WifiChannelEditor</string>
     <string name="toastWebViewDownloadFile">Downloading %1$s</string>
@@ -303,6 +288,7 @@
     <string name="userSensorTypeBusDefault">port</string>
     <string name="view_logs_activity">View Logs</string>
     <string name="webViewDownloadRequestDescription">Download file...</string>
+    <string name="webcam_name_prompt">Enter the name for this webcam here</string>
     <string name="wifi_direct_bad_device_name">The Wifi-Direct device name contains non-printable characters. Please go into the Wifi-Direct settings menu and rename this device.</string>
     <string name="wifi_direct_update_settings">Please wait while we update the Wifi Direct settings on this device.</string>
     <string name="writeXML_prompt">Select an XML file to instantiate a Robot from that file</string>

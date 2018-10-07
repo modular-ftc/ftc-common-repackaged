@@ -31,7 +31,7 @@
             android:hint="@string/name_prompt_text"
             android:inputType="text"
             android:maxLength="200"
-            android:text="@string/servo_controller_name"
+            android:text="@string/filler_text"
             android:textSize="18sp"
             android:textStyle="bold"></EditText>
 
