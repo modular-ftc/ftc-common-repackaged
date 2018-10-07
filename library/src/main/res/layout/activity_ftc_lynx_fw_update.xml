@@ -10,11 +10,27 @@
                 tools:context=".FtcLynxFirmwareUpdateActivity" >
 
     <TextView
-        android:id="@+id/lynxFirmwareInstructions"
+        android:id="@+id/lynxFirmwareInstructionsPre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/lynx_fw_instructions_update"
+        android:layout_gravity="center_horizontal" />
+
+    <ListView
+        android:id="@+id/lynxFirmwareModuleList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:scrollbars="vertical">
+    </ListView>
+
+    <TextView
+        android:id="@+id/lynxFirmwareInstructionsPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/lynx_fw_instructions_update_post"
         android:layout_gravity="center_horizontal" />
 
     <RelativeLayout
