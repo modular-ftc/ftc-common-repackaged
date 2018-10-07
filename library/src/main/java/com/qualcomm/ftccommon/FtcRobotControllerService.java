@@ -68,7 +68,6 @@ import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterRC;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,8 +107,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
   private Future          robotSetupFuture = null;
   private WifiDirectAgent wifiDirectAgent = WifiDirectAgent.getInstance();
   private final Object    wifiDirectCallbackLock = new Object();
-
-  private WebServer webServer;
 
   //----------------------------------------------------------------------------------------------
   // Initialization
@@ -258,7 +255,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
       }
       // Wait until we're free and clear to go
       waitForNetworkConnection();
-      webServer.start();
     }
 
     void startRobot() throws RobotCoreException {
@@ -334,10 +330,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     return this.robot;
   }
 
-  public @NonNull WebServer getWebServer() {
-    return this.webServer;
-  }
-
   @Override public void onCreate() {
     super.onCreate();
     RobotLog.vv(TAG, "onCreate()");
@@ -365,7 +357,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     FtcLynxFirmwareUpdateActivity.initializeDirectories();
 
     NetworkType networkType = (NetworkType) intent.getSerializableExtra(NetworkConnectionFactory.NETWORK_CONNECTION_TYPE);
-    webServer = new WebServer(networkType);
 
     NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     networkConnectionHandler.pushNetworkConnectionCallback(this);
@@ -395,7 +386,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
   @Override public void onDestroy() {
     super.onDestroy();
     RobotLog.vv(TAG, "onDestroy()");
-    webServer.stop();
     stopLEDS();
     wifiDirectAgent.unregisterCallback(this);
   }
@@ -500,11 +490,6 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
         break;
       case CONNECTION_INFO_AVAILABLE:
         RobotLog.ii(TAG, "Network Connection Passphrase: " + networkConnection.getPassphrase());
-        // Handling the case where we are changing networks and the web server has already been started.
-        if (webServer.wasStarted()) {
-          webServer.stop();
-        }
-        webServer.start();
         break;
       case ERROR:
         RobotLog.ee(TAG, "Network Connection Error: " + networkConnection.getFailureReason());
