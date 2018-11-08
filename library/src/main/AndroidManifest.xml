@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- FtcCommon manifest -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qualcomm.ftccommon">
+    package="com.qualcomm.ftccommon"
+    android:versionCode="55"
+    android:versionName="8.9" >
+
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission
@@ -9,6 +15,9 @@
         android:required="true" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
         android:required="true" />
 
     <application
@@ -73,6 +82,10 @@
             android:name="com.qualcomm.ftccommon.FtcWifiDirectRememberedGroupsActivity"
             android:exported="true"
             android:label="@string/title_activity_wifi_remembered_groups_editor" >
+        </activity>
+        <activity
+            android:name="com.qualcomm.ftccommon.AboutActivity"
+            android:label="@string/about_activity" >
         </activity>
         <activity
             android:name="com.qualcomm.ftccommon.FtcAboutActivity"
