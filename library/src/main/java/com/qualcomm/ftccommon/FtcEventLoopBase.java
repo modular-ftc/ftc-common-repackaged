@@ -139,7 +139,6 @@ import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectGroupName;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectPersistentGroupManager;
-import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaManager;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.stellaris.FlashLoaderManager;
 import org.firstinspires.ftc.robotcore.internal.stellaris.FlashLoaderProtocolException;
@@ -147,7 +146,6 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.InspectionState;
 
 import java.io.File;
@@ -398,19 +396,6 @@ public abstract class FtcEventLoopBase implements EventLoop
 
     protected void checkForChangedOpModes()
         {
-        if (registeredOpModes.getOnBotJavaChanged())
-            {
-            OnBotJavaManager.lockBuildExclusiveWhile(new Runnable()
-                {
-                    @Override public void run()
-                        {
-                        registeredOpModes.clearOnBotJavaChanged();
-                        registeredOpModes.registerOnBotJavaOpModes();
-                        }
-                });
-            sendUIState();
-            }
-
         if (registeredOpModes.getBlocksOpModesChanged())
             {
             registeredOpModes.clearBlocksOpModesChanged(); // clear first so we err on side of registerring too often rather than too infrequently
@@ -1086,15 +1071,7 @@ public abstract class FtcEventLoopBase implements EventLoop
     protected void handleCommandStartDriverStationProgramAndManage()
         {
         EventLoopManager eventLoopManager = ftcEventLoopHandler.getEventLoopManager();
-        if (eventLoopManager != null)
-            {
-            WebServer webServer = eventLoopManager.getWebServer();
-            String extra = webServer.getConnectionInformation().toJson();
-            RobotLog.vv(TAG, "sending p&m resp: %s", extra);
-            networkConnectionHandler.sendCommand(new Command(CommandList.CMD_START_DS_PROGRAM_AND_MANAGE_RESP, extra));
-            }
-        else
-            {
+            if (eventLoopManager == null) {
             RobotLog.vv(TAG, "handleCommandStartDriverStationProgramAndManage() with null EventLoopManager; ignored");
             }
         }
