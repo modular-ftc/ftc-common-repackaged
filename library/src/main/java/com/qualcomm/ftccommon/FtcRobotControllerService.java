@@ -358,10 +358,8 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
     NetworkType networkType = (NetworkType) intent.getSerializableExtra(NetworkConnectionFactory.NETWORK_CONNECTION_TYPE);
 
-    NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    networkConnectionHandler.pushNetworkConnectionCallback(this);
-
     networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, getBaseContext());
+    networkConnection.setCallback(this);
     networkConnection.enable();
     networkConnection.createConnection();
 
@@ -474,6 +472,7 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
   @Override
   public CallbackResult onNetworkConnectionEvent(NetworkConnection.NetworkEvent event) {
     CallbackResult result = CallbackResult.NOT_HANDLED;
+    RobotLog.ii(TAG, "onNetworkConnectionEvent: " + event.toString());
     switch (event) {
       case CONNECTED_AS_GROUP_OWNER:
         RobotLog.ii(TAG, "Wifi Direct - connected as group owner");
