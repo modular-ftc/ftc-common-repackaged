@@ -130,7 +130,6 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.ThreadPool;
-import com.qualcomm.robotcore.util.WebServer;
 
 import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.external.function.Supplier;
@@ -143,7 +142,6 @@ import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectGroupName;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectPersistentGroupManager;
-import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaBuildLocker;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.stellaris.FlashLoaderManager;
 import org.firstinspires.ftc.robotcore.internal.stellaris.FlashLoaderProtocolException;
@@ -368,10 +366,6 @@ public abstract class FtcEventLoopBase implements EventLoop
             {
             result = handleCommandVisuallyIdentify(command);
             }
-        else if (name.equals(CommandList.CMD_VISUALLY_CONFIRM_WIFI_RESET))
-            {
-            result = handleCommandVisuallyConfirmWifiReset();
-            }
         else
             {
             result = CallbackResult.NOT_HANDLED;
@@ -409,19 +403,6 @@ public abstract class FtcEventLoopBase implements EventLoop
 
     protected void checkForChangedOpModes()
         {
-        if (registeredOpModes.getOnBotJavaChanged())
-            {
-            OnBotJavaBuildLocker.lockBuildExclusiveWhile(new Runnable()
-                {
-                    @Override public void run()
-                        {
-                        registeredOpModes.clearOnBotJavaChanged();
-                        registeredOpModes.registerOnBotJavaOpModes();
-                        }
-                });
-            sendUIState();
-            }
-
         if (registeredOpModes.getBlocksOpModesChanged())
             {
             registeredOpModes.clearBlocksOpModesChanged(); // clear first so we err on side of registerring too often rather than too infrequently
@@ -1096,15 +1077,7 @@ public abstract class FtcEventLoopBase implements EventLoop
     protected void handleCommandStartDriverStationProgramAndManage()
         {
         EventLoopManager eventLoopManager = ftcEventLoopHandler.getEventLoopManager();
-        if (eventLoopManager != null)
-            {
-            WebServer webServer = eventLoopManager.getWebServer();
-            String extra = webServer.getConnectionInformation().toJson();
-            RobotLog.vv(TAG, "sending p&m resp: %s", extra);
-            networkConnectionHandler.sendCommand(new Command(CommandList.CMD_START_DS_PROGRAM_AND_MANAGE_RESP, extra));
-            }
-        else
-            {
+            if (eventLoopManager == null) {
             RobotLog.vv(TAG, "handleCommandStartDriverStationProgramAndManage() with null EventLoopManager; ignored");
             }
         }
