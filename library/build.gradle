@@ -28,7 +28,7 @@ version = android.defaultConfig.versionName
 project.archivesBaseName = 'ftc-common-repackaged'
 
 dependencies {
-    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.0-lite"
+    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.1-lite"
     implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 
