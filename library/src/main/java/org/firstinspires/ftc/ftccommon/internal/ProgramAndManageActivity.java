@@ -21,7 +21,7 @@ written permission.
 NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
 LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESSFOR A PARTICULAR PURPOSE
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
 FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -58,6 +58,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.R;
@@ -70,11 +71,11 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.ui.LocalByRefRequestCodeHolder;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
-import org.firstinspires.ftc.robotcore.internal.webserver.AppThemeColors;
 import org.firstinspires.ftc.robotcore.internal.webserver.FtcUserAgentCategory;
-import org.firstinspires.ftc.robotcore.internal.webserver.MimeTypesUtil;
-import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebHandlers;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
+import org.firstinspires.ftc.robotserver.internal.webserver.AppThemeColors;
+import org.firstinspires.ftc.robotserver.internal.webserver.MimeTypesUtil;
+import org.firstinspires.ftc.robotserver.internal.webserver.RobotControllerWebHandlers;
 
 import java.io.File;
 import java.net.URI;
@@ -98,6 +99,7 @@ public class ProgramAndManageActivity extends ThemedActivity
 
     public static final String TAG = "Console";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected RobotControllerWebInfo webInfo;
     protected WebView webView;
@@ -509,6 +511,7 @@ public class ProgramAndManageActivity extends ThemedActivity
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString(FtcUserAgentCategory.addToUserAgent(WebSettings.getDefaultUserAgent(this)));
 
         webView.setWebChromeClient(webChromeClient);

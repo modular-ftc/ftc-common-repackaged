@@ -21,7 +21,7 @@ written permission.
 NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
 LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESSFOR A PARTICULAR PURPOSE
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
 FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.qualcomm.ftccommon.CommandList;
@@ -49,8 +50,7 @@ import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.RobocolDatagram;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import junit.framework.Assert;
-
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
@@ -81,6 +81,7 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
     public static final RequestCode requestCode = RequestCode.CONFIG_FROM_TEMPLATE;
     public static final String      TAG = "ConfigFromTemplate";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected NetworkConnectionHandler  networkConnectionHandler    = NetworkConnectionHandler.getInstance();
     protected List<RobotConfigFile>     configurationList           = new CopyOnWriteArrayList<RobotConfigFile>();
@@ -115,7 +116,7 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
             }
         catch (RobotCoreException e)
             {
-            appUtil.showToast(UILocation.ONLY_LOCAL, context, getString(R.string.templateConfigureFailedToOpenUSBScanManager));
+            appUtil.showToast(UILocation.ONLY_LOCAL, getString(R.string.templateConfigureFailedToOpenUSBScanManager));
             RobotLog.ee(TAG, e, "Failed to open usb scan manager: " + e.toString());
             }
 
