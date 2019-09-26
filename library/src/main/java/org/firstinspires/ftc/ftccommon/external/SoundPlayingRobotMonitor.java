@@ -21,7 +21,7 @@ written permission.
 NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
 LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESSFOR A PARTICULAR PURPOSE
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
 FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -74,11 +74,11 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor
 
     // Identity of the sounds played by this monitor. Users can change these
     // instance variables in order to cause different sounds to be played.
-    public @RawRes int soundConnect    = R.raw.chimeconnect;
-    public @RawRes int soundDisconnect = R.raw.chimedisconnect;
-    public @RawRes int soundRunning    = R.raw.nxtstartupsound;
-    public @RawRes int soundWarning    = R.raw.warningmessage;
-    public @RawRes int soundError      = R.raw.errormessage;
+    public static @RawRes int soundConnect    = R.raw.ss_r2d2_up;
+    public static @RawRes int soundDisconnect = R.raw.ss_bb8_down;
+    public static @RawRes int soundRunning    = R.raw.ss_light_speed;
+    public static @RawRes int soundWarning    = R.raw.ss_mine;
+    public static @RawRes int soundError      = R.raw.ss_mf_fail;
 
     protected enum Sound { None, Connect, Disconnect, Running, Warning, Error }
 
@@ -97,7 +97,7 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor
 
     public static void prefillSoundCache()
         {
-        SoundPlayer.getInstance().prefillSoundCache(R.raw.chimeconnect, R.raw.chimedisconnect, R.raw.nxtstartupsound, R.raw.warningmessage, R.raw.errormessage);
+        SoundPlayer.getInstance().prefillSoundCache(soundConnect, soundDisconnect, soundRunning, soundWarning, soundError);
         }
 
     //----------------------------------------------------------------------------------------------

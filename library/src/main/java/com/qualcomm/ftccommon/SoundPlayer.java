@@ -21,7 +21,7 @@ written permission.
 NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
 LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESSFOR A PARTICULAR PURPOSE
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
 FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -372,6 +372,7 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener, SoundPoolI
     /**
      * Preloads the sound so as to to reduce delays if the sound is subsequently played.
      */
+    @Override
     public boolean preload(Context context, @RawRes int resourceId)
         {
         boolean result = false;
@@ -1306,6 +1307,16 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener, SoundPoolI
                     }
                 }
             }
+        }
+
+    @Override
+    public void play(Context context, @RawRes int resourceId, float volume, int loop, float rate)
+        {
+        PlaySoundParams params = new PlaySoundParams(false);
+        params.volume = volume;
+        params.loopControl = loop;
+        params.rate = rate;
+        startPlaying(context, resourceId, params, null, null);
         }
 
     @Override

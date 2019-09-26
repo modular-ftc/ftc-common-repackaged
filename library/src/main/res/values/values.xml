@@ -37,6 +37,7 @@
     <string name="about_activity">About</string>
     <string name="about_app_version">App Version</string>
     <string name="about_build_time">App Build Time</string>
+    <string name="about_ch_os_version">Control Hub OS Version</string>
     <string name="about_library_version">Library Version</string>
     <string name="about_network_connection_info">Network Connection Info</string>
     <string name="about_network_protocol_version">Robot Wifi Protocol Version</string>
@@ -244,7 +245,7 @@
     <string name="string_WifiRememberedGroupsInstructions">The Robot Controller contains the following Wifi Direct remembered groups. Click on the button at the bottom to clear these groups. Clearing groups in this way can at times help alleviate network connectivity issues.</string>
     <string name="summaryAdvancedRCSettings">Change advanced settings of the robot controller</string>
     <string name="summaryLynxAddressUpdate">Change the persistent hub address of one or more Expansion Hubs</string>
-    <string name="summaryLynxFirmwareUpdate">Updates the firmware all currently attached Expansion Hubs</string>
+    <string name="summaryLynxFirmwareUpdate">Updates the firmware of all currently attached Expansion Hubs</string>
     <string name="swapPrompt">Choose the USB controller you want to swap \'%s\' with, or press \'Cancel\'</string>
     <string name="templateConfigurationInstructions">To configure your robot using %1$s, attach the following devices, then press the \'Config\' button:\n%2$s</string>
     <string name="templateConfigureConfigurationInstructionsTitle">Configuration Instructions</string>

@@ -5,10 +5,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
+import android.widget.FrameLayout;
 
+import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.RobocolConfig;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -32,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+
 public class FtcAboutActivity extends ThemedActivity
     {
     //----------------------------------------------------------------------------------------------
@@ -40,6 +44,7 @@ public class FtcAboutActivity extends ThemedActivity
 
     public static final String TAG = "FtcDriverStationAboutActivity";
 	@Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected final Context         context = AppUtil.getDefContext();
     protected final boolean         remoteConfigure = AppUtil.getInstance().isDriverStation();
@@ -83,6 +88,7 @@ public class FtcAboutActivity extends ThemedActivity
         info.libVersion = Version.getLibraryVersion();
         info.buildTime = getBuildTime();
         info.networkProtocolVersion = String.format(Locale.US, "v%d", RobocolConfig.ROBOCOL_VERSION);
+        info.osVersion = LynxConstants.getControlHubOsVersion();
 
         NetworkConnection networkConnection = NetworkConnectionHandler.getInstance().getNetworkConnection();
         if (networkConnection != null)
@@ -138,6 +144,7 @@ public class FtcAboutActivity extends ThemedActivity
     public static class AboutFragment extends PreferenceFragment
         {
         protected final boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
+        private boolean firstRemoteRefresh = true;
 
         public void refreshLocal(RobotCoreCommandList.AboutInfo aboutInfo)
             {
@@ -146,17 +153,28 @@ public class FtcAboutActivity extends ThemedActivity
             setPreferenceSummary(R.string.pref_network_protocol_version, aboutInfo.networkProtocolVersion);
             setPreferenceSummary(R.string.pref_build_time, aboutInfo.buildTime);
             setPreferenceSummary(R.string.pref_network_connection_info, aboutInfo.networkConnectionInfo);
+            setPreferenceSummary(R.string.pref_os_version, aboutInfo.osVersion);
             }
 
         public void refreshRemote(RobotCoreCommandList.AboutInfo aboutInfo)
             {
             if (remoteConfigure)
                 {
+                if (firstRemoteRefresh && aboutInfo.osVersion != null) // If the remote device reports an OS version, we need to add a preference for it
+                    {
+                    PreferenceCategory prefAppCategoryRc = (PreferenceCategory) findPreference(getString(R.string.pref_app_category_rc));
+                    Preference osVersionPreference = new Preference(getPreferenceScreen().getContext());
+                    osVersionPreference.setTitle(getString(R.string.about_ch_os_version));
+                    osVersionPreference.setKey(getString(R.string.pref_os_version_rc));
+                    prefAppCategoryRc.addPreference(osVersionPreference);
+                    }
+                firstRemoteRefresh = false;
                 setPreferenceSummary(R.string.pref_app_version_rc, aboutInfo.appVersion);
                 setPreferenceSummary(R.string.pref_lib_version_rc, aboutInfo.libVersion);
                 setPreferenceSummary(R.string.pref_network_protocol_version_rc, aboutInfo.networkProtocolVersion);
                 setPreferenceSummary(R.string.pref_build_time_rc, aboutInfo.buildTime);
                 setPreferenceSummary(R.string.pref_network_connection_info_rc, aboutInfo.networkConnectionInfo);
+                setPreferenceSummary(R.string.pref_os_version_rc, aboutInfo.osVersion);
                 }
             }
 
@@ -167,12 +185,14 @@ public class FtcAboutActivity extends ThemedActivity
             setPreferenceSummary(R.string.pref_network_protocol_version, null);
             setPreferenceSummary(R.string.pref_build_time, null);
             setPreferenceSummary(R.string.pref_network_connection_info, null);
+            setPreferenceSummary(R.string.pref_os_version, null);
 
             setPreferenceSummary(R.string.pref_app_version_rc, null);
             setPreferenceSummary(R.string.pref_lib_version_rc, null);
             setPreferenceSummary(R.string.pref_network_protocol_version_rc, null);
             setPreferenceSummary(R.string.pref_build_time_rc, null);
             setPreferenceSummary(R.string.pref_network_connection_info_rc, null);
+            setPreferenceSummary(R.string.pref_os_version_rc, null);
             }
 
         @Override public void onCreate(Bundle savedInstanceState)
@@ -180,7 +200,7 @@ public class FtcAboutActivity extends ThemedActivity
             super.onCreate(savedInstanceState);
 
             addPreferencesFromResource(com.qualcomm.ftccommon.R.xml.ftc_about_activity);
-            Preference prefAppCategory = findPreference(getString(R.string.pref_app_category));
+            PreferenceCategory prefAppCategory = (PreferenceCategory) findPreference(getString(R.string.pref_app_category));
             prefAppCategory.setTitle(remoteConfigure ? R.string.prefcat_about_ds : R.string.prefcat_about_rc);
 
             if (remoteConfigure)
@@ -188,6 +208,13 @@ public class FtcAboutActivity extends ThemedActivity
                 addPreferencesFromResource(com.qualcomm.ftccommon.R.xml.ftc_about_activity_rc);
                 Preference prefAppCategoryRc = findPreference(getString(R.string.pref_app_category_rc));
                 prefAppCategoryRc.setTitle(R.string.prefcat_about_rc);
+                }
+            else if (LynxConstants.getControlHubOsVersion() != null)
+                {
+                Preference osVersionPreference = new Preference(getPreferenceScreen().getContext());
+                osVersionPreference.setTitle(getString(R.string.about_ch_os_version));
+                osVersionPreference.setKey(getString(R.string.pref_os_version));
+                prefAppCategory.addPreference(osVersionPreference);
                 }
 
             refreshAllUnavailable();
@@ -266,7 +293,7 @@ public class FtcAboutActivity extends ThemedActivity
         {
         RobotLog.vv(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-        setContentView(com.qualcomm.ftccommon.R.layout.activity_generic_settings);
+        setContentView(R.layout.activity_generic_settings);
 
         // Always make sure we have a real device name before we launch
         DeviceNameManagerFactory.getInstance().initializeDeviceNameIfNecessary();
@@ -276,7 +303,7 @@ public class FtcAboutActivity extends ThemedActivity
 
         getFragmentManager()
                 .beginTransaction()
-                .replace(android.R.id.content, aboutFragment)
+                .replace(R.id.container, aboutFragment)
                 .commit();
 
         NetworkConnectionHandler.getInstance().pushReceiveLoopCallback(recvLoopCallback);
